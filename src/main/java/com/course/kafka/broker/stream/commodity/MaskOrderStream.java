@@ -16,7 +16,7 @@ import javax.print.attribute.standard.OrientationRequested;
 @Configuration
 public class MaskOrderStream {
 
-    public KStream<String, OrderMessage> kstreamCommodityTrading(StreamsBuilder builder){
+     public KStream<String, OrderMessage> kstreamCommodityTrading(StreamsBuilder builder){
         var stringSerde = Serdes.String();
         var orderSerder = new JsonSerde<>(OrderMessage.class);
 
