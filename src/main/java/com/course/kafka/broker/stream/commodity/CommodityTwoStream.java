@@ -11,11 +11,14 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Produced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.kafka.support.serializer.JsonSerde;
 
+import static com.course.kafka.util.CommodityStreamUtil.*;
+import static com.course.kafka.util.CommodityStreamUtil.isCheap;
+import static com.course.kafka.util.CommodityStreamUtil.isPlastic;
+
 //@Configuration
-public class CommodityOneStream {
+public class CommodityTwoStream {
 
     @Bean
     public KStream<String, OrderMessage> kstreamCommodityTrading(StreamsBuilder builder){
@@ -30,21 +33,28 @@ public class CommodityOneStream {
 
         // 1st sink strem to pattern
         // summarize order item ( total = price * quantity
-        KStream<String, OrderPatterMessage> patternStream = maskedOrderStream
-                .mapValues(CommodityStreamUtil::mapToOrderPattern);
+        KStream<String, OrderPatterMessage>[] patternStream = maskedOrderStream
+                .mapValues(CommodityStreamUtil::mapToOrderPattern)
+                .branch(isPlastic(), (k, v) -> true);
 
-        patternStream.to("t.commodity.pattern-one", Produced.with(stringSerde, orderPatterSerde));
+        int plasticIndex = 0;
+        int notPlasticIndex = 1;
+
+        patternStream[plasticIndex].to("t.commodity.pattern-two.plastic",
+                Produced.with(stringSerde, orderPatterSerde));
+        patternStream[notPlasticIndex].to("t.commodity.pattern-two.notplastic",
+                Produced.with(stringSerde, orderPatterSerde));
 
         // 2sn sink stream to reward
-        // filter only "large" quantity
         KStream<String, OrderRewardMessage> rewardStream = maskedOrderStream
-                .filter(CommodityStreamUtil.isLargeQuantity())
+                .filterNot(isCheap())
                 .mapValues(CommodityStreamUtil::mapToRewarMessage);
-        rewardStream.to("t.commdity.reward-one", Produced.with(stringSerde, orderRewardSerde));
+        rewardStream.to("t.commdity.reward-two", Produced.with(stringSerde, orderRewardSerde));
 
         // 3rd sink stream to storage
-        // no transformation
-        maskedOrderStream.to("t.commodity.storage-one", Produced.with(stringSerde, orderSerde));
+        KStream<String, OrderMessage> storageStream = maskedOrderStream
+                .selectKey(generateStorageKey());
+        storageStream.to("t.commodity.storage-two", Produced.with(stringSerde, orderSerde));
 
         return maskedOrderStream;
     }
