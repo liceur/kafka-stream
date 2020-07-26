@@ -19,7 +19,7 @@ import org.springframework.kafka.support.serializer.JsonSerde;
 
 import static com.course.kafka.util.CommodityStreamUtil.*;
 
-@Configuration
+//@Configuration
 public class CommoditySixStream {
 
     private static final Logger LOG = LoggerFactory.getLogger(CommoditySixStream.class);

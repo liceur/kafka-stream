@@ -1,5 +1,6 @@
 package com.course.kafka.broker.stream.feedback;
 
+import com.course.kafka.broker.message.FeedbackMessage;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -13,7 +14,7 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
-@Configuration
+//@Configuration
 public class FeedbackSixStream {
 
     private static final Set<String> BAD_WORDS = Set.of("angry", "bad", "sad");

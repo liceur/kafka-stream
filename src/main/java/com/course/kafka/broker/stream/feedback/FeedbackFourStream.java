@@ -1,11 +1,11 @@
 package com.course.kafka.broker.stream.feedback;
 
+import com.course.kafka.broker.message.FeedbackMessage;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.*;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.support.serializer.JsonSerde;
 
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
-@Configuration
+//@Configuration
 public class FeedbackFourStream {
 
     private static final Set<String> BAD_WORDS = Set.of("angry", "bad", "sad");
